@@ -45,11 +45,19 @@ func Get(repo, groupID, artifactID, version string) (p Project, err error) {
 	// Get the POM file
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		err = fmt.Errorf("error getting %s: %v", url, err)
+		err = fmt.Errorf("error forming request of %s: %v", url, err)
 		return
 	}
 	cl := http.DefaultClient
 	resp, err := cl.Do(req)
+	if err != nil {
+		err = fmt.Errorf("error getting %s: %v", url, err)
+		return
+	}
+	if resp.StatusCode != http.StatusOK {
+		err = fmt.Errorf("http response %d downloading POM file", resp.StatusCode)
+		return
+	}
 	mb, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		err = fmt.Errorf("error reading body from %s: %v", url, err)

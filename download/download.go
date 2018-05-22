@@ -37,6 +37,9 @@ func Latest(repo, groupID, artifactID, fileExt, path string) (int64, string, err
 		return 0, "", err
 	}
 	n, err := Get(url, w)
+	if err != nil {
+		os.Remove(w.Name())
+	}
 	return n, fname, err
 }
 

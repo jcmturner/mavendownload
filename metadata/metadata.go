@@ -40,11 +40,19 @@ func Get(repo, groupID, artifactID string) (md MetaData, err error) {
 	// Get the metadata
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		err = fmt.Errorf("error getting %s: %v", url, err)
+		err = fmt.Errorf("error forming request of %s: %v", url, err)
 		return
 	}
 	cl := http.DefaultClient
 	resp, err := cl.Do(req)
+	if err != nil {
+		err = fmt.Errorf("error getting %s: %v", url, err)
+		return
+	}
+	if resp.StatusCode != http.StatusOK {
+		err = fmt.Errorf("http response %d downloading metadata", resp.StatusCode)
+		return
+	}
 	mb, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		err = fmt.Errorf("error reading body from %s: %v", url, err)
@@ -91,18 +99,19 @@ func SHA1(url string) (string, error) {
 	url = url + ".sha1"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		err = fmt.Errorf("%s: %v", url, err)
-		return "", err
+		return "", fmt.Errorf("%s: %v", url, err)
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", err
 	}
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("http response %d downloading sha1 file", resp.StatusCode)
+	}
 	r := bufio.NewReader(resp.Body)
 	mdsha1, err := r.ReadString('\n')
 	if err != nil && err != io.EOF {
-		err = fmt.Errorf("%s: %v", url, err)
-		return "", err
+		return "", fmt.Errorf("%s: %v", url, err)
 	}
 	return strings.TrimSpace(mdsha1), nil
 }

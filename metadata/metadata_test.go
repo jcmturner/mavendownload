@@ -48,7 +48,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprintln(w, testMetaData)
 	}))
 	defer ts.Close()
-	md, err := Get(ts.URL)
+	md, err := Get(ts.URL, "log4j", "log4j")
 	if err != nil {
 		t.Fatalf("Error getting metadata: %v", err)
 	}

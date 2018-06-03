@@ -15,6 +15,7 @@ func main() {
 	artifactID := flag.String("artifactid", "", "ArtifactID of artifact")
 	ext := flag.String("ext", "", "Override file extension")
 	out := flag.String("out", "./", "Output path")
+	ver := flag.String("version", "", "Download a specified version. If not defined the latest is downloaded")
 	flag.Parse()
 
 	if !strings.HasPrefix(*repo, "http://") && !strings.HasPrefix(*repo, "https://") {
@@ -29,7 +30,14 @@ func main() {
 		fmt.Fprintln(os.Stderr, "ArtifactID is not defined")
 		os.Exit(1)
 	}
-	n, fname, err := download.Latest(*repo, *grpID, *artifactID, *ext, *out)
+	var n int64
+	var fname string
+	var err error
+	if *ver != "" {
+		n, fname, err = download.Version(*repo, *grpID, *artifactID, *ext, *ver, *out)
+	} else {
+		n, fname, err = download.Latest(*repo, *grpID, *artifactID, *ext, *out)
+	}
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error downloading: %v", err)
 		os.Exit(1)

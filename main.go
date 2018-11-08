@@ -39,7 +39,7 @@ func main() {
 		n, fname, err = download.Latest(*repo, *grpID, *artifactID, *ext, *out)
 	}
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error downloading: %v", err)
+		fmt.Fprintf(os.Stderr, "Error downloading: %v\n", err)
 		os.Exit(1)
 	}
 	fmt.Printf("Output: %s/%s\nSize: %d", strings.TrimRight(*out, "/"), fname, n)

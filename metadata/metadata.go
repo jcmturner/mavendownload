@@ -50,7 +50,7 @@ func Get(repo, groupID, artifactID string) (md MetaData, err error) {
 		return
 	}
 	if resp.StatusCode != http.StatusOK {
-		err = fmt.Errorf("http response %d downloading metadata", resp.StatusCode)
+		err = fmt.Errorf("http response %d downloading metadata (%s)", resp.StatusCode, url)
 		return
 	}
 	mb, err := ioutil.ReadAll(resp.Body)
@@ -106,7 +106,7 @@ func SHA1(url string) (string, error) {
 		return "", err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("http response %d downloading sha1 file", resp.StatusCode)
+		return "", fmt.Errorf("http response %d downloading sha1 file (%s)", resp.StatusCode, url)
 	}
 	r := bufio.NewReader(resp.Body)
 	mdsha1, err := r.ReadString('\n')

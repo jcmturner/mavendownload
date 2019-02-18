@@ -39,7 +39,7 @@ type Dependency struct {
 	Optional   bool   `xml:"optional"`
 }
 
-func Get(repo, groupID, artifactID, version string) (p Project, err error) {
+func Get(repo, groupID, artifactID, version string, cl *http.Client) (p Project, err error) {
 	url := fmt.Sprintf("%s/%s/%s/%s/%s-%s.pom", strings.TrimRight(repo, "/"), groupID, artifactID, version, artifactID, version)
 
 	// Get the POM file
@@ -48,7 +48,9 @@ func Get(repo, groupID, artifactID, version string) (p Project, err error) {
 		err = fmt.Errorf("error forming request of %s: %v", url, err)
 		return
 	}
-	cl := http.DefaultClient
+	if cl == nil {
+		cl = http.DefaultClient
+	}
 	resp, err := cl.Do(req)
 	if err != nil {
 		err = fmt.Errorf("error getting %s: %v", url, err)
@@ -66,7 +68,7 @@ func Get(repo, groupID, artifactID, version string) (p Project, err error) {
 	defer resp.Body.Close()
 
 	// Get the POM file SHA1
-	psha1, err := metadata.SHA1(url)
+	psha1, err := metadata.SHA1(url, cl)
 	if err != nil {
 		err = fmt.Errorf("error getting POM SHA1: %v", err)
 		return

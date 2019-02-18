@@ -34,7 +34,7 @@ type Versioning struct {
 	LastUpdated    time.Time `xml:"-"`
 }
 
-func Get(repo, groupID, artifactID string) (md MetaData, err error) {
+func Get(repo, groupID, artifactID string, cl *http.Client) (md MetaData, err error) {
 	url := fmt.Sprintf("%s/%s/%s/%s", strings.TrimRight(repo, "/"), groupID, artifactID, mavenMetadataFile)
 
 	// Get the metadata
@@ -43,7 +43,9 @@ func Get(repo, groupID, artifactID string) (md MetaData, err error) {
 		err = fmt.Errorf("error forming request of %s: %v", url, err)
 		return
 	}
-	cl := http.DefaultClient
+	if cl == nil {
+		cl = http.DefaultClient
+	}
 	resp, err := cl.Do(req)
 	if err != nil {
 		err = fmt.Errorf("error getting %s: %v", url, err)
@@ -60,7 +62,7 @@ func Get(repo, groupID, artifactID string) (md MetaData, err error) {
 	}
 	defer resp.Body.Close()
 
-	mdsha1, err := SHA1(url)
+	mdsha1, err := SHA1(url, cl)
 	if err != nil {
 		err = fmt.Errorf("error getting SHA1: %v", err)
 		return
@@ -95,13 +97,16 @@ func (v *Versioning) parseLUpdate() (err error) {
 	return
 }
 
-func SHA1(url string) (string, error) {
+func SHA1(url string, cl *http.Client) (string, error) {
 	url = url + ".sha1"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return "", fmt.Errorf("%s: %v", url, err)
 	}
-	resp, err := http.DefaultClient.Do(req)
+	if cl == nil {
+		cl = http.DefaultClient
+	}
+	resp, err := cl.Do(req)
 	if err != nil {
 		return "", err
 	}

@@ -16,6 +16,7 @@ func main() {
 	ext := flag.String("ext", "", "Override file extension")
 	out := flag.String("out", "./", "Output path")
 	ver := flag.String("version", "", "Download a specified version. If not defined the latest is downloaded")
+	ca := flag.String("ca", "", "Path to CA (PEM format)")
 	flag.Parse()
 
 	if !strings.HasPrefix(*repo, "http://") && !strings.HasPrefix(*repo, "https://") {
@@ -34,9 +35,9 @@ func main() {
 	var fname string
 	var err error
 	if *ver != "" {
-		n, fname, err = download.Version(*repo, *grpID, *artifactID, *ext, *ver, *out)
+		n, fname, err = download.Version(*repo, *grpID, *artifactID, *ext, *ver, *out, *ca)
 	} else {
-		n, fname, err = download.Latest(*repo, *grpID, *artifactID, *ext, *out)
+		n, fname, err = download.Latest(*repo, *grpID, *artifactID, *ext, *out, *ca)
 	}
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error downloading: %v\n", err)

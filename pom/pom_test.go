@@ -1,6 +1,7 @@
 package pom
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/jcmturner/mavendownload/metadata"
@@ -8,11 +9,11 @@ import (
 )
 
 func TestGet(t *testing.T) {
-	md, err := metadata.Get("http://central.maven.org/maven2", "log4j", "log4j")
+	md, err := metadata.Get("http://central.maven.org/maven2", "log4j", "log4j", http.DefaultClient)
 	if err != nil {
 		t.Fatalf("error getting repo metadata: %v", err)
 	}
-	p, err := Get("http://central.maven.org/maven2", "log4j", "log4j", md.Versioning.Latest)
+	p, err := Get("http://central.maven.org/maven2", "log4j", "log4j", md.Versioning.Latest, http.DefaultClient)
 	if err != nil {
 		t.Fatalf("error getting pom: %v", err)
 	}

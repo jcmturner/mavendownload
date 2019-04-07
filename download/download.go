@@ -29,7 +29,7 @@ func Latest(repo, groupID, artifactID, fileExt, path, caPath string) (int64, str
 	if err != nil {
 		return 0, "", err
 	}
-	return save(repo, groupID, artifactID, fileExt, path, md.Versioning.Latest, cl)
+	return Save(repo, groupID, artifactID, fileExt, path, md.Versioning.Latest, cl)
 }
 
 // Version writes the specified version of the artifact into the specified path.
@@ -53,7 +53,7 @@ func Version(repo, groupID, artifactID, fileExt, version, path, caPath string) (
 	if !valid {
 		return 0, "", fmt.Errorf("version %s not available", version)
 	}
-	return save(repo, groupID, artifactID, fileExt, path, version, cl)
+	return Save(repo, groupID, artifactID, fileExt, path, version, cl)
 }
 
 // Get downloads the target URL to the provided Writer. As part of the download the SHA1 is validated.
@@ -87,7 +87,7 @@ func Get(url string, w io.Writer, cl *http.Client) (int64, error) {
 	return n, nil
 }
 
-func save(repo, groupID, artifactID, fileExt, path, version string, cl *http.Client) (int64, string, error) {
+func Save(repo, groupID, artifactID, fileExt, path, version string, cl *http.Client) (int64, string, error) {
 	p, err := pom.Get(repo, groupID, artifactID, version, cl)
 	if err != nil {
 		return 0, "", err

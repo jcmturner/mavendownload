@@ -95,18 +95,19 @@ func Save(repo, groupID, artifactID, fileExt, path, version string, cl *http.Cli
 	if fileExt == "" {
 		fileExt = p.Packaging
 	}
-	fname := fmt.Sprintf("%s-%s.%s", artifactID, version, fileExt)
-	url := fmt.Sprintf("%s/%s/%s/%s/%s", strings.TrimRight(repo, "/"),
-		groupID, artifactID, version, fname)
-	w, err := os.Create(fmt.Sprintf("%s/%s", strings.TrimRight(path, "/"), fname))
+	fName := fmt.Sprintf("%s-%s.%s", artifactID, version, fileExt)
+	fPath := fmt.Sprintf("%s/%s", strings.TrimRight(path, "/"), fName)
+	w, err := os.Create(fPath)
 	if err != nil {
 		return 0, "", err
 	}
+	url := fmt.Sprintf("%s/%s/%s/%s/%s", strings.TrimRight(repo, "/"),
+		groupID, artifactID, version, fName)
 	n, err := Get(url, w, cl)
 	if err != nil {
 		os.Remove(w.Name())
 	}
-	return n, fname, err
+	return n, fPath, err
 }
 
 func httpClient(caPath string) (*http.Client, error) {
